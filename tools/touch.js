@@ -1,5 +1,6 @@
 let offset = 0.05;
 let have_dist = false;
+
 function findDistWall(kinect) 
 {
     return new Promise((resolve, reject) => 
@@ -20,7 +21,7 @@ function findDistWall(kinect)
         kinect.openBodyReader()
 
         setTimeout(function(){
-            if(distWall.length > 0) {
+            if(distWall.length > 10) {
                 kinect.closeBodyReader().then(()=>{
                     resolve(numAverage(distWall));
                 });
@@ -48,7 +49,7 @@ module.exports = (io,kinect) => {
         const socket = this;
         if (kinect.open()) {
             let avgDist = await findDistWall(kinect);
-            have_dist = true
+            have_dist = true;
             kinect.on('bodyFrame',function (bodyFrame) {
                 let nb_peoples = 0;
                 let personnes = [];
