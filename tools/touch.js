@@ -43,10 +43,11 @@ function numAverage(a) {
 }
 
 async function tryFindDistWall(kinect){
-    let avgDist = await findDistWall(kinect).catch((e)=>{
+    findDistWall(kinect).then(()=>{
+        return avgDist
+    }).catch((e)=>{
         tryFindDistWall(kinect)
     })
-    return avgDist
 
 }
 
@@ -55,7 +56,7 @@ module.exports = (io,kinect) => {
     const touch = async function() {
         const socket = this;
         if (kinect.open()) {
-            let avgDist = await tryFindDistWall(kinect)
+            let avgDist =  await tryFindDistWall(kinect)
             have_dist = true;
             console.log(avgDist)
             // kinect.on('bodyFrame',function (bodyFrame) {
