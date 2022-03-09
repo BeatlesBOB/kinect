@@ -22,7 +22,9 @@ function findDistWall(kinect)
                     resolve(numAverage(distWall));
                 });
             } else {
-                findDistWall(kinect)
+                kinect.closeBodyReader().then(()=>{
+                    findDistWall(kinect)
+                });
             }
         },5000);
     });
