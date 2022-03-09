@@ -48,8 +48,12 @@ module.exports = (io,kinect) => {
     const touch = async function() {
         const socket = this;
         if (kinect.open()) {
+            let avgDist
             try{
-                let avgDist = await findDistWall(kinect);
+                avgDist= await findDistWall(kinect);                
+            }catch(e){
+                avgDist = await findDistWall(kinect);
+            }
                 have_dist = true;
                 kinect.on('bodyFrame',function (bodyFrame) {
                     let nb_peoples = 0;
@@ -85,9 +89,6 @@ module.exports = (io,kinect) => {
                     }
                 });
                 kinect.openBodyReader();
-            }catch(e){
-                let avgDist = await findDistWall(kinect);
-            }
         } else {
             console.log("Kinect could not be openend");
         } 
