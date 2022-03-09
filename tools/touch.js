@@ -47,11 +47,7 @@ module.exports = (io,kinect) => {
     const touch = async function() {
         const socket = this;
         if (kinect.open()) {
-            try{
-                avgDist = await findDistWall(kinect);
-            }catch(e){
-                console.log("FUCK",e)
-            }
+            let avgDist = findDistWall(kinect);
             kinect.on('bodyFrame',function (bodyFrame) {
                 let nb_peoples = 0;
                 let personnes = [];
