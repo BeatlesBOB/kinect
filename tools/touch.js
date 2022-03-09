@@ -1,14 +1,17 @@
 let offset = 0.05;
-
+let have_dist = false;
 function findDistWall(kinect) 
 {
     return new Promise((resolve, reject) => 
     {
         let distWall = [];    
         kinect.on('bodyFrame', function(bodyFrame){
-            for(var i = 0;  i < bodyFrame.bodies.length; i++) {
-                if (bodyFrame.bodies[i].tracked) {
-                    distWall.push(bodyFrame.bodies[i].joints[3].cameraZ)
+            if(!have_dist){
+                for(var i = 0;  i < bodyFrame.bodies.length; i++) {
+                    if (bodyFrame.bodies[i].tracked) {
+                        distWall.push(bodyFrame.bodies[i].joints[3].cameraZ)
+                        console.log("track");
+                    }
                 }
             }
 
@@ -45,8 +48,7 @@ module.exports = (io,kinect) => {
         const socket = this;
         if (kinect.open()) {
             let avgDist = await findDistWall(kinect);
-            console.warn("La distance")
-            console.log(avgDist)
+            have_dist = true
             kinect.on('bodyFrame',function (bodyFrame) {
                 let nb_peoples = 0;
                 let personnes = [];
