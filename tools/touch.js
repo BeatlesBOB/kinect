@@ -23,11 +23,11 @@ function findDistWall(kinect)
             if(distWall.length > 0) {
                 kinect.closeBodyReader().then(()=>{
                     isOpen = false;
-                    return resolve(numAverage(distWall));
+                    resolve(numAverage(distWall));
                 });
             } else {
                 findDistWall(kinect)
-                return reject()
+                reject()
             }
         },5000);
     });
