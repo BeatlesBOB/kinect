@@ -55,7 +55,7 @@ module.exports = (io,kinect) => {
     const touch = async function() {
         const socket = this;
         if (kinect.open()) {
-            let avgDist = tryFindDistWall(kinect)
+            let avgDist = await tryFindDistWall(kinect)
             have_dist = true;
             console.log(avgDist)
             // kinect.on('bodyFrame',function (bodyFrame) {
