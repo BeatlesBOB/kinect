@@ -47,44 +47,47 @@ module.exports = (io,kinect) => {
     const touch = async function() {
         const socket = this;
         if (kinect.open()) {
-
-            avgDist = await findDistWall(kinect);
-            kinect.on('bodyFrame',function (bodyFrame) {
-                let nb_peoples = 0;
-                let personnes = [];
-                let response;
-
-                for(var i = 0;  i < bodyFrame.bodies.length; i++) {
-                    if (bodyFrame.bodies[i].tracked && (bodyFrame.bodies[i].joints[7].cameraZ >= avgDist-offset  || bodyFrame.bodies[i].joints[11].cameraZ >= avgDist-offset)) {
-                        nb_peoples++
-                        response = {"nb_peoples": nb_peoples}
-                        let people = {}
-                        if(bodyFrame.bodies[i].joints[7].cameraZ >= avgDist-offset){
-                            people["left_hand"] = {
-                                "x": bodyFrame.bodies[i].joints[7].colorX,
-                                "y": bodyFrame.bodies[i].joints[7].colorY,
+            try{
+                avgDist = await findDistWall(kinect);
+                kinect.on('bodyFrame',function (bodyFrame) {
+                    let nb_peoples = 0;
+                    let personnes = [];
+                    let response;
+    
+                    for(var i = 0;  i < bodyFrame.bodies.length; i++) {
+                        if (bodyFrame.bodies[i].tracked && (bodyFrame.bodies[i].joints[7].cameraZ >= avgDist-offset  || bodyFrame.bodies[i].joints[11].cameraZ >= avgDist-offset)) {
+                            nb_peoples++
+                            response = {"nb_peoples": nb_peoples}
+                            let people = {}
+                            if(bodyFrame.bodies[i].joints[7].cameraZ >= avgDist-offset){
+                                people["left_hand"] = {
+                                    "x": bodyFrame.bodies[i].joints[7].colorX,
+                                    "y": bodyFrame.bodies[i].joints[7].colorY,
+                                }
                             }
-                        }
-
-                        if(bodyFrame.bodies[i].joints[11].cameraZ >= avgDist-offset){
-                            people["right_hand"] = {
-                                "x": bodyFrame.bodies[i].joints[11].colorX,
-                                "y": bodyFrame.bodies[i].joints[11].colorY,
+    
+                            if(bodyFrame.bodies[i].joints[11].cameraZ >= avgDist-offset){
+                                people["right_hand"] = {
+                                    "x": bodyFrame.bodies[i].joints[11].colorX,
+                                    "y": bodyFrame.bodies[i].joints[11].colorY,
+                                }
                             }
+                            personnes.push(people)
                         }
-                        personnes.push(people)
                     }
+    
+                    response["peoples"] = personnes
+    
+                    if(response)  {
+                        socket.emit('touch',response)
+                    }
+                });
+            
+                if(!isOpen) {
+                    kinect.openBodyReader();
                 }
-
-                response["peoples"] = personnes
-
-                if(response)  {
-                    socket.emit('touch',response)
-                }
-            });
-        
-            if(!isOpen) {
-                kinect.openBodyReader();
+            }catch(e){
+                console.log(e)
             }
         } else {
             console.log("Kinect could not be openend");
