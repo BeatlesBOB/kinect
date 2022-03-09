@@ -19,7 +19,6 @@ function findDistWall(kinect)
         });
             
         kinect.openBodyReader()
-
         setTimeout(function(){
             if(distWall.length > 10) {
                 kinect.closeBodyReader().then(()=>{
@@ -27,8 +26,7 @@ function findDistWall(kinect)
                 });
             } else {
                 kinect.closeBodyReader().then(()=>{
-                    reject()
-                    findDistWall(kinect)
+                    reject(Error("FUCK"))
                 });
             }
         },5000);
@@ -44,16 +42,22 @@ function numAverage(a) {
     return c/b;
 }
 
+async function tryFindDistWall(kinect){
+    let avgDist = await findDistWall(kinect).catch((e)=>{
+        tryFindDistWall(kinect)
+    })
+    return avgDist
+
+}
+
 module.exports = (io,kinect) => {
 
     const touch = async function() {
         const socket = this;
         if (kinect.open()) {
-            let avgDist
-            avgDist = await findDistWall(kinect)
-            console.log("FUCK")
-
-            // have_dist = true;
+            let avgDist = tryFindDistWall(kinect)
+            have_dist = true;
+            console.log(avgDist)
             // kinect.on('bodyFrame',function (bodyFrame) {
             //     let nb_peoples = 0;
             //     let personnes = [];
