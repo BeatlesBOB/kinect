@@ -26,8 +26,8 @@ function findDistWall(kinect)
                     resolve(numAverage(distWall));
                 });
             } else {
-                findDistWall(kinect)
                 reject()
+                findDistWall(kinect)
             }
         },5000);
     });
