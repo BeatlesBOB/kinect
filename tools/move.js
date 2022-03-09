@@ -4,7 +4,7 @@ module.exports = (io,kinect) => {
     const move =  function (){
         const socket = this; 
         if (kinect.open()) {
-            console.log("Kinect Opened");
+            console.warn("Kinect Opened");
             //listen for body frames
             kinect.on('bodyFrame', (bodyFrame) => {
                 let nb_peoples = 0;

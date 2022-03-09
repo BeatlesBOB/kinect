@@ -1,8 +1,7 @@
 let offset = 0.10;
 let have_dist = false;
 
-function findDistWall(kinect) 
-{
+function findDistWall(kinect) {
     return new Promise((resolve, reject) => 
     {
         let distWall = [];    
@@ -11,7 +10,7 @@ function findDistWall(kinect)
                 for(var i = 0;  i < bodyFrame.bodies.length; i++) {
                     if (bodyFrame.bodies[i].tracked) {
                         distWall.push(bodyFrame.bodies[i].joints[3].cameraZ)
-                        console.log("track");
+                        console.log("Tracking....");
                     }
                 }
             }
@@ -22,11 +21,14 @@ function findDistWall(kinect)
         setTimeout(function(){
             if(distWall.length > 10) {
                 kinect.closeBodyReader().then(()=>{
+                    console.warn("Resolve");
                     resolve(numAverage(distWall));
+
                 });
             } else {
                 kinect.closeBodyReader().then(()=>{
-                    reject(Error("FUCK"))
+                    console.warn("Reject");
+                    reject(Error("Rejected"))
                 });
             }
         },5000);
@@ -43,16 +45,13 @@ function numAverage(a) {
 }
 
 async function tryFindDistWall(kinect){
-    console.log('cucu')
     let v
-
     try {
         v = await findDistWall(kinect)
-        console.log("ALLO ", v)
     } catch(e){
+        console.warn("Retry")
         v = await tryFindDistWall(kinect)
     }
-
     return v
 }
 
@@ -61,11 +60,12 @@ module.exports = (io,kinect) => {
     const touch = async function() {
         const socket = this;
         if (kinect.open()) {
+            console.warn("Kinect Opened");
             let avgDist = await tryFindDistWall(kinect)
+            console.warn("Le mur est à ",avgDist)
             have_dist = true;
-            console.log('zizi', avgDist)
             kinect.on('bodyFrame',function (bodyFrame) {
-                let nb_peoples = 0;
+                let nb_peoples = 0
                 let personnes = [];
                 let response;
 
