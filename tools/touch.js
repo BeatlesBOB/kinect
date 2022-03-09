@@ -47,6 +47,8 @@ module.exports = (io,kinect) => {
         const socket = this;
         if (kinect.open()) {
             let avgDist = await findDistWall(kinect);
+            console.warn("La distance")
+            console.log(avgDist)
             // kinect.on('bodyFrame',function (bodyFrame) {
             //     let nb_peoples = 0;
             //     let personnes = [];
