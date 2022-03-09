@@ -43,7 +43,8 @@ function numAverage(a) {
 }
 
 async function tryFindDistWall(kinect){
-    findDistWall(kinect).then(()=>{
+    findDistWall(kinect).then((avgDist)=>{
+        console.log("ALLO ",avgDist)
         return avgDist
     }).catch((e)=>{
         tryFindDistWall(kinect)
