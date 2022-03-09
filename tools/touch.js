@@ -28,6 +28,7 @@ function findDistWall(kinect)
             } else {
                 kinect.closeBodyReader().then(()=>{
                     reject()
+                    findDistWall(kinect)
                 });
             }
         },5000);
@@ -49,9 +50,8 @@ module.exports = (io,kinect) => {
         const socket = this;
         if (kinect.open()) {
             let avgDist
-            avgDist = await findDistWall(kinect).catch((e)=>{
-                console.log("fuck")
-            });                
+            avgDist = await findDistWall(kinect)
+            console.log("FUCK")
 
             // have_dist = true;
             // kinect.on('bodyFrame',function (bodyFrame) {
