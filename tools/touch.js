@@ -199,7 +199,7 @@ module.exports = (io,kinect) => {
                         
                         
                         if(bodyFrame.bodies[i].joints[7].cameraZ >= avgDist-offset){
-                            let left_hand = {x: bodyFrame.bodies[i].joints[7].colorX - avgMin.x,y:bodyFrame.bodies[i].joints[7].colorY + avgMin.y}
+                            let left_hand = {x: 1-bodyFrame.bodies[i].joints[7].colorX - avgMin.x,y:bodyFrame.bodies[i].joints[7].colorY + avgMin.y}
                             people["left_hand"] = left_hand
                             // {
                             //     "x": bodyFrame.bodies[i].joints[7].colorX,
@@ -208,7 +208,7 @@ module.exports = (io,kinect) => {
                         }
 
                         if(bodyFrame.bodies[i].joints[11].cameraZ >= avgDist-offset){
-                            let right_hand = {x: bodyFrame.bodies[i].joints[11].colorX - avgMin.x,y:bodyFrame.bodies[i].joints[11].colorY+avgMin.y}
+                            let right_hand = {x: 1 - bodyFrame.bodies[i].joints[11].colorX - avgMin.x,y:bodyFrame.bodies[i].joints[11].colorY+avgMin.y}
                             people["right_hand"] = right_hand
                             // {
                             //     "x": bodyFrame.bodies[i].joints[11].colorX,
