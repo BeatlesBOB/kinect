@@ -175,13 +175,17 @@ module.exports = (io,kinect) => {
             console.warn("Le mur est à ",avgDist)
             have_dist = true;
             
-            let avgMin = await tryFindMin(kinect)
-            console.warn("Le poutou est à ",avgMin)
+            let t = await tryFindMin(kinect)
+            console.warn("Le poutou est à ",t)
             have_min = true;
             
-            let avgMax = await tryFindMax(kinect)
-            console.warn("Le z est à ",avgMax)
+            let b = await tryFindMax(kinect)
+            console.warn("Le z est à ",b)
             have_max = true;
+
+            let r = {x:b.x,y:t.y} 
+            let l = {x:t.x,y:b.y}
+
 
 
 
@@ -192,30 +196,32 @@ module.exports = (io,kinect) => {
 
                 for(var i = 0;  i < bodyFrame.bodies.length; i++) {
                     if (bodyFrame.bodies[i].tracked && (bodyFrame.bodies[i].joints[7].cameraZ >= avgDist-offset  || bodyFrame.bodies[i].joints[11].cameraZ >= avgDist-offset)) {
-                        
-                        nb_peoples++
-                        response = {"nb_peoples": nb_peoples}
-                        let people = {}
-                        
-                        
-                        if(bodyFrame.bodies[i].joints[7].cameraZ >= avgDist-offset){
-                            let left_hand = {x: 1-bodyFrame.bodies[i].joints[7].colorX - avgMin.x,y:bodyFrame.bodies[i].joints[7].colorY + avgMin.y}
-                            people["left_hand"] = left_hand
-                            // {
-                            //     "x": bodyFrame.bodies[i].joints[7].colorX,
-                            //     "y": bodyFrame.bodies[i].joints[7].colorY,
-                            // }
+                        if((bodyFrame.bodies[i].joints[7].colorX >= t.x && bodyFrame.bodies[i].joints[7].colorX < b.x) && (bodyFrame.bodies[i].joints[7].colorY > t.y && bodyFrame.bodies[i].joints[7].colorY < b.y)){
+                            nb_peoples++
+                            response = {"nb_peoples": nb_peoples}
+                            let people = {}
+                            
+                            
+                            if(bodyFrame.bodies[i].joints[7].cameraZ >= avgDist-offset){
+                                let left_hand = {x: 1 - bodyFrame.bodies[i].joints[7].colorX - avgMin.x,y:bodyFrame.bodies[i].joints[7].colorY + avgMin.y}
+                                people["left_hand"] = left_hand
+                                // {
+                                //     "x": bodyFrame.bodies[i].joints[7].colorX,
+                                //     "y": bodyFrame.bodies[i].joints[7].colorY,
+                                // }
+                            }
+    
+                            if(bodyFrame.bodies[i].joints[11].cameraZ >= avgDist-offset){
+                                let right_hand = {x: 1 - bodyFrame.bodies[i].joints[11].colorX - avgMin.x,y:bodyFrame.bodies[i].joints[11].colorY+avgMin.y}
+                                people["right_hand"] = right_hand
+                                // {
+                                //     "x": bodyFrame.bodies[i].joints[11].colorX,
+                                //     "y": bodyFrame.bodies[i].joints[11].colorY,
+                                // }
+                            }
+                            personnes.push(people)
+                            
                         }
-
-                        if(bodyFrame.bodies[i].joints[11].cameraZ >= avgDist-offset){
-                            let right_hand = {x: 1 - bodyFrame.bodies[i].joints[11].colorX - avgMin.x,y:bodyFrame.bodies[i].joints[11].colorY+avgMin.y}
-                            people["right_hand"] = right_hand
-                            // {
-                            //     "x": bodyFrame.bodies[i].joints[11].colorX,
-                            //     "y": bodyFrame.bodies[i].joints[11].colorY,
-                            // }
-                        }
-                        personnes.push(people)
                     }
                 }
                 response["peoples"] = personnes
