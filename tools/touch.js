@@ -5,7 +5,7 @@ function findDistWall(kinect) {
     return new Promise((resolve, reject) => 
     {
         let distWall = [];    
-        kinect.on('bodyFrame', function(bodyFrame){
+        kinect.on('bodyFrame', (bodyFrame) => {
             if(!have_dist){
                 for(var i = 0;  i < bodyFrame.bodies.length; i++) {
                     if (bodyFrame.bodies[i].tracked) {
@@ -19,7 +19,7 @@ function findDistWall(kinect) {
             
         kinect.openBodyReader()
         setTimeout(function(){
-            if(distWall.length > 10) {
+            if(distWall.length > 100) {
                 kinect.closeBodyReader().then(()=>{
                     console.warn("Resolve");
                     resolve(numAverage(distWall));
@@ -64,7 +64,7 @@ module.exports = (io,kinect) => {
             let avgDist = await tryFindDistWall(kinect)
             console.warn("Le mur est à ",avgDist)
             have_dist = true;
-            kinect.on('bodyFrame',function (bodyFrame) {
+            kinect.on('bodyFrame', (bodyFrame) => {
                 let nb_peoples = 0
                 let personnes = [];
                 let response;
