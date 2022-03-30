@@ -1,5 +1,7 @@
 let offset = 0.10;
 let have_dist = false;
+let have_max = false;
+let have_min = false;
 
 function findDistWall(kinect) {
     return new Promise((resolve, reject) => 
@@ -35,6 +37,73 @@ function findDistWall(kinect) {
     });
 }
 
+function findMax(kinect) {
+    return new Promise((resolve, reject) => 
+    {
+        let Max = [];    
+        kinect.on('bodyFrame', (bodyFrame) => {
+            if(!have_max){
+                for(var i = 0;  i < bodyFrame.bodies.length; i++) {
+                    if (bodyFrame.bodies[i].tracked) {
+                        Max.push({x:bodyFrame.bodies[i].joints[11].colorX,y:bodyFrame.bodies[i].joints[11].colorY})
+                        console.log("Max tracking....");
+                    }
+                }
+            }
+
+        });
+            
+        kinect.openBodyReader()
+        setTimeout(function(){
+            if(Max.length > 100) {
+                kinect.closeBodyReader().then(()=>{
+                    console.warn("Resolve max");
+                    resolve(coordAverage(Max));
+                });
+            } else {
+                kinect.closeBodyReader().then(()=>{
+                    console.warn("Reject");
+                    reject(Error("Rejected"))
+                });
+            }
+        },5000);
+    });
+}
+
+function findMin(kinect) {
+    return new Promise((resolve, reject) => 
+    {
+        let Min = [];    
+        kinect.on('bodyFrame', (bodyFrame) => {
+            if(!have_min){
+                for(var i = 0;  i < bodyFrame.bodies.length; i++) {
+                    if (bodyFrame.bodies[i].tracked) {
+                        Min.push({x:bodyFrame.bodies[i].joints[11].colorX,y:bodyFrame.bodies[i].joints[11].colorY})
+                        console.log("Min tracking....");
+                    }
+                }
+            }
+
+        });
+            
+        kinect.openBodyReader()
+        setTimeout(function(){
+            if(Min.length > 100) {
+                kinect.closeBodyReader().then(()=>{
+                    console.warn("Resolve");
+                    resolve(coordAverage(Min));
+
+                });
+            } else {
+                kinect.closeBodyReader().then(()=>{
+                    console.warn("Reject");
+                    reject(Error("Rejected"))
+                });
+            }
+        },5000);
+    });
+}
+
 function numAverage(a) {
     let b = a.length,
     c = 0, i;
@@ -44,15 +113,55 @@ function numAverage(a) {
     return c/b;
 }
 
-async function tryFindDistWall(kinect){
-    let v
-    try {
-        v = await findDistWall(kinect)
-    } catch(e){
-        console.warn("Retry")
-        v = await tryFindDistWall(kinect)
+function coordAverage(a) {
+    let b = a.length;
+    let xAvg = 0;
+    let yAvg = 0
+    for (let i = 0; i < b; i++){
+        xAvg += Number(a[i].x);
+        yAvg += Number(a[i].y);
     }
-    return v
+    return {x:xAvg/b,y:yAvg/b};
+}
+
+
+async function tryFindDistWall(kinect){
+    setTimeout(()=>{
+        let v
+        try {
+            v = await findDistWall(kinect)
+        } catch(e){
+            console.warn("Retry Dist")
+            v = await tryFindDistWall(kinect)
+        }
+        return v
+    },3000)
+}
+
+async function tryFindMax(kinect){
+    setTimeout(()=>{
+        let v
+        try {
+            v = await findMax(kinect)
+        } catch(e){
+            console.warn("Retry Max")
+            v = await tryFindMax(kinect)
+        }
+        return v
+    },3000)
+}
+
+async function tryFindMin(kinect){
+    setTimeout(()=>{
+        let v
+        try {
+            v = await findMin(kinect)
+        } catch(e){
+            console.warn("Retry Max")
+            v = await tryFindMin(kinect)
+        }
+        return v
+    },3000)
 }
 
 module.exports = (io,kinect) => {
@@ -61,9 +170,21 @@ module.exports = (io,kinect) => {
         const socket = this;
         if (kinect.open()) {
             console.warn("Kinect Opened");
+            
             let avgDist = await tryFindDistWall(kinect)
             console.warn("Le mur est à ",avgDist)
             have_dist = true;
+            
+            let avgMin = await tryFindMin(kinect)
+            console.warn("Le poutou est à ",avgMin)
+            have_min = true;
+            
+            let avgMax = await tryFindMax(kinect)
+            console.warn("Le z est à ",avgMax)
+            have_max = true;
+
+
+
             kinect.on('bodyFrame', (bodyFrame) => {
                 let nb_peoples = 0
                 let personnes = [];
@@ -71,21 +192,28 @@ module.exports = (io,kinect) => {
 
                 for(var i = 0;  i < bodyFrame.bodies.length; i++) {
                     if (bodyFrame.bodies[i].tracked && (bodyFrame.bodies[i].joints[7].cameraZ >= avgDist-offset  || bodyFrame.bodies[i].joints[11].cameraZ >= avgDist-offset)) {
+                        
                         nb_peoples++
                         response = {"nb_peoples": nb_peoples}
                         let people = {}
+                        
+                        
                         if(bodyFrame.bodies[i].joints[7].cameraZ >= avgDist-offset){
-                            people["left_hand"] = {
-                                "x": bodyFrame.bodies[i].joints[7].colorX,
-                                "y": bodyFrame.bodies[i].joints[7].colorY,
-                            }
+                            let left_hand = {x: bodyFrame.bodies[i].joints[7].colorX - avgMin.x,y:bodyFrame.bodies[i].joints[7].colorY + avgMin.y}
+                            people["left_hand"] = left_hand
+                            // {
+                            //     "x": bodyFrame.bodies[i].joints[7].colorX,
+                            //     "y": bodyFrame.bodies[i].joints[7].colorY,
+                            // }
                         }
 
                         if(bodyFrame.bodies[i].joints[11].cameraZ >= avgDist-offset){
-                            people["right_hand"] = {
-                                "x": bodyFrame.bodies[i].joints[11].colorX,
-                                "y": bodyFrame.bodies[i].joints[11].colorY,
-                            }
+                            let right_hand = {x: bodyFrame.bodies[i].joints[11].colorX - avgMin.x,y:bodyFrame.bodies[i].joints[11].colorY+avgMin.y}
+                            people["right_hand"] = right_hand
+                            // {
+                            //     "x": bodyFrame.bodies[i].joints[11].colorX,
+                            //     "y": bodyFrame.bodies[i].joints[11].colorY,
+                            // }
                         }
                         personnes.push(people)
                     }
