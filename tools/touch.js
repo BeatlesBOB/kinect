@@ -186,6 +186,9 @@ module.exports = (io,kinect) => {
             let r = {x:b.x,y:t.y} 
             let l = {x:t.x,y:b.y}
 
+            let height = l.y - t.y;
+            let width = r.x - t.x;
+
 
 
 
@@ -200,10 +203,9 @@ module.exports = (io,kinect) => {
                             nb_peoples++
                             response = {"nb_peoples": nb_peoples}
                             let people = {}
-                            
-                            
+                                                        
                             if(bodyFrame.bodies[i].joints[7].cameraZ >= avgDist-offset){
-                                let left_hand = {x: 1 - bodyFrame.bodies[i].joints[7].colorX - avgMin.x,y:bodyFrame.bodies[i].joints[7].colorY + avgMin.y}
+                                let left_hand = {x: 1 - bodyFrame.bodies[i].joints[7].colorX * width,y:bodyFrame.bodies[i].joints[7].colorY * height}
                                 people["left_hand"] = left_hand
                                 // {
                                 //     "x": bodyFrame.bodies[i].joints[7].colorX,
@@ -212,7 +214,7 @@ module.exports = (io,kinect) => {
                             }
     
                             if(bodyFrame.bodies[i].joints[11].cameraZ >= avgDist-offset){
-                                let right_hand = {x: 1 - bodyFrame.bodies[i].joints[11].colorX - avgMin.x,y:bodyFrame.bodies[i].joints[11].colorY+avgMin.y}
+                                let right_hand = {x: 1 - bodyFrame.bodies[i].joints[11].colorX * width,y:bodyFrame.bodies[i].joints[11].colorY * height}
                                 people["right_hand"] = right_hand
                                 // {
                                 //     "x": bodyFrame.bodies[i].joints[11].colorX,
