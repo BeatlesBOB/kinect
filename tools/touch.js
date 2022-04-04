@@ -126,42 +126,44 @@ function coordAverage(a) {
 
 
 async function tryFindDistWall(kinect){
-    setTimeout(()=>{
-        let v
+    let v =
+    await new Promise(resolve => setTimeout(async()=>{
+        console.log("bizarre")
         try {
             v = await findDistWall(kinect)
         } catch(e){
             console.warn("Retry Dist")
             v = await tryFindDistWall(kinect)
         }
-        return v
-    },3000)
+        resolve(v)
+    },3000));
+   return v
 }
 
 async function tryFindMax(kinect){
-    setTimeout(()=>{
-        let v
+    let v =
+    await new Promise(resolve => setTimeout(async()=>{
         try {
             v = await findMax(kinect)
         } catch(e){
             console.warn("Retry Max")
             v = await tryFindMax(kinect)
         }
-        return v
-    },3000)
+    },3000));
+   return v
 }
 
 async function tryFindMin(kinect){
-    setTimeout(()=>{
-        let v
+    let v =
+    await new Promise(resolve => setTimeout(async()=>{
         try {
             v = await findMin(kinect)
         } catch(e){
-            console.warn("Retry Max")
+            console.warn("Retry Min")
             v = await tryFindMin(kinect)
         }
-        return v
-    },3000)
+    },3000));
+   return v
 }
 
 module.exports = (io,kinect) => {
