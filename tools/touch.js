@@ -78,7 +78,7 @@ function findMin(kinect) {
             if(!have_min){
                 for(var i = 0;  i < bodyFrame.bodies.length; i++) {
                     if (bodyFrame.bodies[i].tracked) {
-                        Min.push({x:bodyFrame.bodies[i].joints[11].colorX,y:bodyFrame.bodies[i].joints[11].colorY})
+                        Min.push({x:bodyFrame.bodies[i].joints[7].colorX,y:bodyFrame.bodies[i].joints[7].colorY})
                         console.log("Min tracking....");
                     }
                 }
