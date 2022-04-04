@@ -21,7 +21,7 @@ function findDistWall(kinect) {
             
         kinect.openBodyReader()
         setTimeout(function(){
-            if(distWall.length > 100) {
+            if(distWall.length > 25) {
                 kinect.closeBodyReader().then(()=>{
                     console.warn("Resolve");
                     resolve(numAverage(distWall));
@@ -55,7 +55,7 @@ function findMax(kinect) {
             
         kinect.openBodyReader()
         setTimeout(function(){
-            if(Max.length > 100) {
+            if(Max.length > 25) {
                 kinect.closeBodyReader().then(()=>{
                     console.warn("Resolve max");
                     resolve(coordAverage(Max));
@@ -88,7 +88,7 @@ function findMin(kinect) {
             
         kinect.openBodyReader()
         setTimeout(function(){
-            if(Min.length > 100) {
+            if(Min.length > 25) {
                 kinect.closeBodyReader().then(()=>{
                     console.warn("Resolve");
                     resolve(coordAverage(Min));
@@ -126,43 +126,51 @@ function coordAverage(a) {
 
 
 async function tryFindDistWall(kinect){
-    let v =
-    await new Promise(resolve => setTimeout(async()=>{
-        console.log("bizarre")
+    let v = await new Promise((resolve,reject) => setTimeout(async()=>{
+        let response
         try {
-            v = await findDistWall(kinect)
+            response = await findDistWall(kinect)
         } catch(e){
-            console.warn("Retry Dist")
-            v = await tryFindDistWall(kinect)
+            reject()
+            
         }
-        resolve(v)
-    },3000));
+        resolve(response)
+    },3000)).catch(async () =>{
+        console.warn("Retry Dist")
+        v = await tryFindDistWall(kinect)
+    });
    return v
 }
 
 async function tryFindMax(kinect){
-    let v =
-    await new Promise(resolve => setTimeout(async()=>{
+    let v = await new Promise((resolve,reject) => setTimeout(async()=>{
+        let response
         try {
-            v = await findMax(kinect)
+            response = await findMax(kinect)
         } catch(e){
-            console.warn("Retry Max")
-            v = await tryFindMax(kinect)
+            reject()
         }
-    },3000));
+        resolve(response)
+    },3000)).catch(async () =>{
+        console.warn("Retry Max")
+        v = await tryFindMax(kinect)
+    });
    return v
 }
 
 async function tryFindMin(kinect){
-    let v =
-    await new Promise(resolve => setTimeout(async()=>{
+    let v = await new Promise((resolve,reject) => setTimeout(async()=>{
+        let response
         try {
-            v = await findMin(kinect)
+            response = await findMin(kinect)
         } catch(e){
-            console.warn("Retry Min")
-            v = await tryFindMin(kinect)
+            reject()
         }
-    },3000));
+        resolve(response)
+    },3000)).catch(async () =>{
+        console.warn("Retry Min")
+        v = await tryFindMin(kinect)
+    });
    return v
 }
 
