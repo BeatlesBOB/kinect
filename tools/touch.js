@@ -76,9 +76,7 @@ module.exports = (io,kinect) => {
             let avgDist = await tryFindDistWall(kinect)
             console.warn("Le mur est à ",avgDist)
             have_dist = true;
-            
         
-
             kinect.on('bodyFrame', (bodyFrame) => {
                 let nb_peoples = 0
                 let personnes = [];
@@ -102,8 +100,8 @@ module.exports = (io,kinect) => {
                         personnes.push(people)
                     }
                 }
-                response.peoples = personnes;
-                if(response.peoples != [])  {
+                response["peoples"] = personnes;
+                if(response.peoples.length > 0 && nb_peoples > 0)  {
                     socket.emit('touch',response)
                 }
             });
