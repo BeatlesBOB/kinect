@@ -73,7 +73,8 @@ module.exports = (io,kinect) => {
         if (kinect.open()) {
             console.warn("Kinect Opened");
             
-            let avgDist = await tryFindDistWall(kinect).toFixed(1)
+            let avgDist = await tryFindDistWall(kinect)
+            avgDist = new Number(avgDist).toFixed(1);
             console.warn("Le mur est à ",avgDist)
             have_dist = true;
         
