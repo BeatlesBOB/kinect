@@ -83,17 +83,18 @@ module.exports = (io,kinect) => {
                 let response;
 
                 for(var i = 0;  i < bodyFrame.bodies.length; i++) {
-                    if (bodyFrame.bodies[i].tracked && (bodyFrame.bodies[i].joints[7].cameraZ <= avgDist+offset  || bodyFrame.bodies[i].joints[11].cameraZ <= avgDist+offset)) {
+                    if (bodyFrame.bodies[i].tracked) {
                         nb_peoples++
                         response = {"nb_peoples": nb_peoples}
-                        let people = {}
-                                                        
+                        let people = {};
+                        people["left_hand"] = {x: bodyFrame.bodies[i].joints[7].colorX, y: bodyFrame.bodies[i].joints[7].colorY,touch:false}
+                        people["right_hand"] = {x: bodyFrame.bodies[i].joints[11].colorX, y: bodyFrame.bodies[i].joints[11].colorY,touch:false }
+
                         if(bodyFrame.bodies[i].joints[7].cameraZ <= avgDist+offset){
-                            people["left_hand"] = {x: bodyFrame.bodies[i].joints[7].colorX, y: bodyFrame.bodies[i].joints[7].colorY }
+                            people["left_hand"]["touch"] = true
                         }
-    
                         if(bodyFrame.bodies[i].joints[11].cameraZ <= avgDist+offset){
-                            people["right_hand"] = {x: bodyFrame.bodies[i].joints[11].colorX, y: bodyFrame.bodies[i].joints[11].colorY }
+                            people["right_hand"]["touch"] = true
                         }
                         personnes.push(people)
                     }
