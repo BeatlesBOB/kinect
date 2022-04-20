@@ -90,11 +90,14 @@ module.exports = (io,kinect) => {
                         let people = {};
                         people["left_hand"] = {x: bodyFrame.bodies[i].joints[7].colorX, y: bodyFrame.bodies[i].joints[7].colorY,touch:false}
                         people["right_hand"] = {x: bodyFrame.bodies[i].joints[11].colorX, y: bodyFrame.bodies[i].joints[11].colorY,touch:false }
-
-                        if(bodyFrame.bodies[i].joints[7].cameraZ <= avgDist+offset){
+                        let dist_left = new Number(bodyFrame.bodies[i].joints[7].cameraZ).toFixed(1);
+                        let dist_right = new Number(bodyFrame.bodies[i].joints[11].cameraZ).toFixed(1);
+                        
+                        if( dist_left <= avgDist+offset){
                             people["left_hand"]["touch"] = true
                         }
-                        if(bodyFrame.bodies[i].joints[11].cameraZ <= avgDist+offset){
+                        if(dist_right <= avgDist+offset){
+                            console.log("touch")
                             people["right_hand"]["touch"] = true
                         }
                         personnes.push(people)
