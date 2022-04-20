@@ -232,8 +232,8 @@ module.exports = (io,kinect) => {
                         }
                     }
                 }
-                response["peoples"] = personnes
-                if(response)  {
+                response.peoples = personnes;
+                if(response.peoples != [])  {
                     socket.emit('touch',response)
                 }
             });
