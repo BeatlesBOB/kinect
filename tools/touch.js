@@ -99,7 +99,7 @@ module.exports = (io,kinect) => {
                     }
                 }
                 response["peoples"] = personnes;
-                if(response.peoples.length > 0 && nb_peoples > 0)  {
+                if(response.peoples.length > 0)  {
                     socket.emit('touch',response)
                 }
             });

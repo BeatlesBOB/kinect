@@ -31,7 +31,7 @@ module.exports = (io,kinect) => {
                     }   
                 }
                 response["peoples"] = personnes
-                if(response){
+                if(response.peoples.length > 0){
                     socket.emit('move',response)
                 }
         });
