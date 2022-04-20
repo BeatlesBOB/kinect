@@ -1,4 +1,4 @@
-let offset = 0.10;
+let offset = 0.05;
 let have_dist = false;
 let have_max = false;
 let have_min = false;
@@ -73,7 +73,7 @@ module.exports = (io,kinect) => {
         if (kinect.open()) {
             console.warn("Kinect Opened");
             
-            let avgDist = await tryFindDistWall(kinect)
+            let avgDist = await tryFindDistWall(kinect).toFixed(1)
             console.warn("Le mur est à ",avgDist)
             have_dist = true;
         
