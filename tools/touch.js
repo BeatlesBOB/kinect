@@ -1,7 +1,6 @@
 let offset = 0.05;
 let have_dist = false;
-let have_max = false;
-let have_min = false;
+
 
 function findDistWall(kinect) {
     return new Promise((resolve, reject) => 
@@ -20,7 +19,7 @@ function findDistWall(kinect) {
         });
             
         kinect.openBodyReader()
-        setTimeout(function(){
+        setTimeout(async () => {
             if(distWall.length > 25) {
                 kinect.closeBodyReader().then(()=>{
                     console.warn("Resolve");
@@ -28,12 +27,12 @@ function findDistWall(kinect) {
 
                 });
             } else {
-                kinect.closeBodyReader().then(()=>{
-                    console.warn("Reject");
-                    reject(Error("Rejected"))
-                });
+                await kinect.closeBodyReader();
+                reject("Reject kinect Not enough dist 1")
             }
         },5000);
+    }).catch((error)=>{
+        console.warn(error)
     });
 }
 
@@ -51,16 +50,16 @@ function numAverage(a) {
 
 async function tryFindDistWall(kinect){
     let v = await new Promise((resolve,reject) => setTimeout(async()=>{
-        let response
-        try {
-            response = await findDistWall(kinect)
-        } catch(e){
-            reject()
+        let response = await findDistWall(kinect)
+        if(response){
+            console.log("Resolve Dist")
+            resolve(response)
+        }else{
+            reject("Rejected by findDistWall")
         }
-        resolve(response)
-    },3000)).catch(async () =>{
-        console.warn("Retry Dist")
-        v = await tryFindDistWall(kinect)
+    },3000)).catch(async (err) => {
+        console.warn("Retry Dist",err)
+        await tryFindDistWall(kinect)
     });
    return v
 }
