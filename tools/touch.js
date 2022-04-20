@@ -88,14 +88,12 @@ module.exports = (io,kinect) => {
                         response = {"nb_peoples": nb_peoples}
                         let people = {}
                                                         
-                        if(bodyFrame.bodies[i].joints[7].cameraZ >= avgDist+offset){
-                            let left_hand = {x: bodyFrame.bodies[i].joints[7].colorX, y: bodyFrame.bodies[i].joints[7].colorY }
-                            people["left_hand"] = left_hand
+                        if(bodyFrame.bodies[i].joints[7].cameraZ <= avgDist+offset){
+                            people["left_hand"] = {x: bodyFrame.bodies[i].joints[7].colorX, y: bodyFrame.bodies[i].joints[7].colorY }
                         }
     
-                        if(bodyFrame.bodies[i].joints[11].cameraZ >= avgDist+offset){
-                            let right_hand = {x: bodyFrame.bodies[i].joints[11].colorX, y: bodyFrame.bodies[i].joints[11].colorY }
-                            people["right_hand"] = right_hand
+                        if(bodyFrame.bodies[i].joints[11].cameraZ <= avgDist+offset){
+                            people["right_hand"] = {x: bodyFrame.bodies[i].joints[11].colorX, y: bodyFrame.bodies[i].joints[11].colorY }
                         }
                         personnes.push(people)
                     }
