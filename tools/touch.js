@@ -45,7 +45,7 @@ function findMax(kinect) {
             if(!have_max){
                 for(var i = 0;  i < bodyFrame.bodies.length; i++) {
                     if (bodyFrame.bodies[i].tracked) {
-                        Max.push({x:bodyFrame.bodies[i].joints[11].colorX,y:bodyFrame.bodies[i].joints[11].colorY})
+                        Max.push({x:bodyFrame.bodies[i].joints[7].colorX,y:bodyFrame.bodies[i].joints[7].colorY})
                         console.log("Max tracking....");
                     }
                 }
@@ -78,7 +78,7 @@ function findMin(kinect) {
             if(!have_min){
                 for(var i = 0;  i < bodyFrame.bodies.length; i++) {
                     if (bodyFrame.bodies[i].tracked) {
-                        Min.push({x:bodyFrame.bodies[i].joints[7].colorX,y:bodyFrame.bodies[i].joints[7].colorY})
+                        Min.push({x:bodyFrame.bodies[i].joints[11].colorX,y:bodyFrame.bodies[i].joints[11].colorY})
                         console.log("Min tracking....");
                     }
                 }
@@ -132,7 +132,6 @@ async function tryFindDistWall(kinect){
             response = await findDistWall(kinect)
         } catch(e){
             reject()
-            
         }
         resolve(response)
     },3000)).catch(async () =>{
@@ -198,9 +197,6 @@ module.exports = (io,kinect) => {
 
             let height = l.y - t.y;
             let width = r.x - t.x;
-
-
-
 
             kinect.on('bodyFrame', (bodyFrame) => {
                 let nb_peoples = 0
