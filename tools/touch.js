@@ -195,7 +195,7 @@ module.exports = (io,kinect) => {
             let r = {x:b.x,y:t.y} 
             let l = {x:t.x,y:b.y}
 
-            let height = l.y - t.y;
+            let height = l.y - r.y;
             let width = r.x - t.x;
 
             kinect.on('bodyFrame', (bodyFrame) => {
